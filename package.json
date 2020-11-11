@@ -1,0 +1,9 @@
+{
+  "name": "restful-api",
+  "version": "1.0.0",
+  "description": "RESTful API using vanilla NodeJS",
+  "main": "index.js",
+  "author": "Renan M Galvão <renan.m.galvao@gmail.com>",
+  "license": "MIT",
+  "private": false
+}
