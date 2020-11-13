@@ -1,8 +1,41 @@
 const http = require('http');
+const https = require('https');
 const url = require('url');
 const StringDecoder = require('string_decoder').StringDecoder;
+const fs = require('fs');
 
-const server = http.createServer((req, res) => {
+const config = require('./config');
+
+
+// Instantiate the HTTP server
+const httpServer = http.createServer((req, res) => {
+  unifiedServer(req, res);
+});
+
+// Start the HTTP server
+httpServer.listen(config.httpPort, () => {
+  console.log(`The server is listening on port ${config.httpPort}.`);
+});
+
+
+// Instantiate the HTTPS server
+const httpsServerOptions = {
+  key: fs.readFileSync('./https/key.pen'),
+  cert: fs.readFileSync('./https/cert.pen'),
+};
+
+const httpsServer = https.createServer(httpsServerOptions, (req, res) => {
+  unifiedServer(req, res);
+});
+
+// Start the HTTPS server
+httpsServer.listen(config.httpsPort, () => {
+  console.log(`The server is listening on port ${config.httpsPort}.`);
+});
+
+
+// All the server logic for both  the http and https server
+const unifiedServer = (req, res) => {
   const parsedUrl = url.parse(req.url, true);
 
   const path = parsedUrl.pathname;
@@ -54,27 +87,27 @@ const server = http.createServer((req, res) => {
 
       console.log('Returning this response: ', status, payloadString);
     });
-  });    
-});
-
-server.listen(3000, () => {
-  console.log('The server is listening on port 3000 now');
-});
+  });
+};
 
 
 const handlers = {
 
-  sample: (data, callback) => {
+  hello: (data, callback) => {
+    callback(200, {message: "Welcome, dear visitor!"});
+  },
 
-    callback(406, {name: 'sample handler'});
+  ping: (data, callback) => {
+    callback(200);
   },
 
   notFound: (data, callback) => {
 
     callback(404);
   }
-}
+};
 
 const router = {
-  sample: handlers.sample
-}
+  hello: handlers.hello,
+  ping: handlers.ping,
+};
