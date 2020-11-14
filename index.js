@@ -3,8 +3,9 @@ const https = require('https');
 const url = require('url');
 const StringDecoder = require('string_decoder').StringDecoder;
 const fs = require('fs');
+const path = require('path');
 
-const config = require('./config');
+const config = require(path.join(__dirname, 'config'));
 
 
 // Instantiate the HTTP server
@@ -20,8 +21,8 @@ httpServer.listen(config.httpPort, () => {
 
 // Instantiate the HTTPS server
 const httpsServerOptions = {
-  key: fs.readFileSync('./https/key.pen'),
-  cert: fs.readFileSync('./https/cert.pen'),
+  key: fs.readFileSync(path.join(__dirname, 'https', 'key.pen')),
+  cert: fs.readFileSync(path.join(__dirname, 'https', 'cert.pen')),
 };
 
 const httpsServer = https.createServer(httpsServerOptions, (req, res) => {
