@@ -5,7 +5,8 @@ let environments = {};
 environments.development = {
   httpPort: 3000,
   httpsPort: 3001,
-  envName: 'development',  
+  envName: 'development',
+  hashingSecret: 'my little secret',  
 };
 
 // Production
@@ -13,6 +14,7 @@ environments.production = {
   httpPort: 5000,
   httpsPort: 5001,
   envName: 'production',
+  hashingSecret: 'my little secret',
 };
 
 // Determine wich environment was passed as a command-line argument if any

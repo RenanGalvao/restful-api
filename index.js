@@ -6,6 +6,8 @@ const fs = require('fs');
 const path = require('path');
 
 const config = require(path.join(__dirname, 'config'));
+const handlers = require(path.join(__dirname, 'lib', 'handlers'));
+const helpers = require(path.join(__dirname, 'lib', 'helpers')); 
 
 
 // Instantiate the HTTP server
@@ -41,11 +43,10 @@ const unifiedServer = (req, res) => {
 
   const path = parsedUrl.pathname;
   const trimmedPath = path.replace(/^\/+|\/+$/g, '');
-  console.log(trimmedPath);
 
   const queryStringObject = parsedUrl.query;
 
-  const method = req.method.toUpperCase();
+  const method = req.method.toLowerCase();
 
   const headers = req.headers;
 
@@ -67,7 +68,7 @@ const unifiedServer = (req, res) => {
       queryStringObject,
       method,
       headers,
-      payload: buffer
+      payload: helpers.parseJsonToObject(buffer),
     };
 
     // route the request
@@ -92,23 +93,8 @@ const unifiedServer = (req, res) => {
 };
 
 
-const handlers = {
-
-  hello: (data, callback) => {
-    callback(200, {message: "Welcome, dear visitor!"});
-  },
-
-  ping: (data, callback) => {
-    callback(200);
-  },
-
-  notFound: (data, callback) => {
-
-    callback(404);
-  }
-};
-
 const router = {
   hello: handlers.hello,
   ping: handlers.ping,
+  users: handlers.users,
 };
