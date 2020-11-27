@@ -1,3 +1,5 @@
 cert.pen
 key.pen
 .data/**/*.json
+.logs/*.log
+.logs/*.gz.b64

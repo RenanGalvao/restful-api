@@ -7,7 +7,12 @@ environments.development = {
   httpsPort: 3001,
   envName: 'development',
   hashingSecret: 'my little secret',
-  maxChecks: 5,  
+  maxChecks: 5,
+  twilio: {
+    accountSid: 'AC20a35e8598bdb193f14c2014db2287f3',
+    authToken: '6efe4edc90304f7dfb630d1eef277ce7',
+    fromPhone: '+18335281217'
+  },
 };
 
 // Production
@@ -17,7 +22,13 @@ environments.production = {
   envName: 'production',
   hashingSecret: 'my little secret',
   maxChecks: 5,
+  twilio: {
+    accountSid: 'AC20a35e8598bdb193f14c2014db2287f3',
+    authToken: '6efe4edc90304f7dfb630d1eef277ce7',
+    fromPhone: '+18335281217'
+  },
 };
+
 
 // Determine wich environment was passed as a command-line argument if any
 const currentEnvironment = typeof(process.env.NODE_ENV) == 'string' ? process.env.NODE_ENV.toLowerCase() : '';
