@@ -5,6 +5,7 @@ let environments = {};
 environments.development = {
   httpPort: 3000,
   httpsPort: 3001,
+  domain: 'localhost',
   envName: 'development',
   hashingSecret: 'my little secret',
   maxChecks: 5,
@@ -19,6 +20,7 @@ environments.development = {
 environments.production = {
   httpPort: 5000,
   httpsPort: 5001,
+  domain: 'yourdomain',
   envName: 'production',
   hashingSecret: 'my little secret',
   maxChecks: 5,

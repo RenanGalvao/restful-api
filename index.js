@@ -1,5 +1,5 @@
-const server = require('./lib/server');
-const workers = require('./lib/workers');
+import server from './lib/server.js';
+import workers from './lib/workers.js';
 
 let app = {};
 
@@ -14,5 +14,4 @@ app.init = () => {
 // Execute
 app.init();
 
-// Export for testing
-module.exports = app;
+export default app;
