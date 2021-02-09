@@ -3,3 +3,4 @@ key.pen
 .data/**/*.json
 .logs/*.log
 .logs/*.gz.b64
+config.js
