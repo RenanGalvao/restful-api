@@ -1,0 +1,6 @@
+-Adequar o modo como o data passa os erros para o novo erroHandler que está no helpers
+-testar o POST do users
+-terminar handler do users 
+  -fazer outros métodos
+  -colocar o fallback do errorHandler
+ 
