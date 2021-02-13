@@ -1,4 +1,6 @@
+-Continuar testando o users apartir do PUT
 -Adequar o modo como o data passa os erros para o novo erroHandler que está no helpers
+  - Gerar erros propositais para testar cada um, create,read,update e delete
 -testar o POST do users
 -terminar handler do users 
   -fazer outros métodos
