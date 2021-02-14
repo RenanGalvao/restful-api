@@ -14,6 +14,12 @@ environments.development = {
     authToken: 'your_auth_token',
     fromPhone: 'your_phone'
   },
+  templateGlobals: {
+    appName: 'Uptime Checker',
+    baseURL: 'http://localhost:3000',
+    companyName: 'Home Inc.',
+    yearCreated: 2021,
+  }
 };
 
 // Production
@@ -29,6 +35,12 @@ environments.production = {
     authToken: 'your_auth_token',
     fromPhone: '+your_phone'
   },
+  templateGlobals: {
+    appName: 'Uptime Checker',
+    baseURL: 'http://localhost:3000',
+    companyName: 'Home Inc.',
+    yearCreated: 2021,
+  }
 };
 
 
