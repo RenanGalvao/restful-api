@@ -18,81 +18,8 @@ openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pen -out c
 ## Basic Use
 Start the app: `node index.js`.
 
-#### Create an account
-Send a `POST` request as JSON to `http://localhost:3000/users`:
-```JSON
-{
-	"name": "T. Hanks",
-	"email": "thanks@example.com",
-	"password": "123",
-	"street_address": "123 Nowhere"
-}
-```
 
-#### Log-in
-Send a `POST` request as JSON to `http://localhost:3000/login`:
-```JSON
-{
-	"name": "T. Hanks",
-	"email": "thanks@example.com",
-	"password": "123",
-	"street_address": "123 Nowhere"
-}
-```
-
-Response (something like this):
-```JSON
-{
-  "email": "thanks@example.com",
-  "token_id": "184wwpxy4p49ajoy1elb",
-  "expires": 1612480954036,
-  "name": "T. Hanks",
-  "stripe_customer_id": "cus_It2CBjF49O05v2"
-}
-```
-Save the token_id for later use as a bearer token in all subsequent requests that you need to authenticate.
-
-#### Register a card
-Send a `POST` request as JSON to `http://localhost:3000/card`:
-```JSON
-{
-	"stripe_token": "tok_visa"
-}
-```
-
-#### Add some items to the cart
-Send a `POST` request as JSON to `http://localhost:3000/cart`:
-```JSON
-{
-	"item_id": "1g2a2fp4o1hw943cn7tw",
-	"quantity": 3
-}
-```
-Response (something like this):
-```JSON
-{
-  "items": [
-    {
-      "item_id": "1g2a2fp4o1hw943cn7tw",
-      "quantity": 3
-    }
-  ]
-}
-```
-You can look at the item ids in the menu route.
-
-#### Place an order
-Send a `POST` request to `http://localhost:3000/order`. Response (something like this):
-```JSON
-{
-  "id": "ch_1IHGjDBxFSNMzSeaY7lrP1yk",
-  "object": "charge",
-  "amount": 6600,
-  ...
-}
-```
-
-
+## This below needs to be updated
 ## API Routes
 ```
 [GET] /card -> user card information.
