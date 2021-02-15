@@ -1,5 +1,5 @@
 # RESTful API using vanilla NodeJS
-Course from pirple.com
+A complete HTTP/S webserver made with vanilla Node.js. 
 
 ## How to Install
 1. Using your terminal: 
@@ -19,46 +19,105 @@ openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pen -out c
 Start the app: `node index.js`.
 
 
-## This below needs to be updated
-## API Routes
+### Actual Folder Structure
 ```
-[GET] /card -> user card information.
-[POST] /card -> adds a credit card for future payments.
-[PUT] /card -> updates some cardholder information.
-[DELETE] /card -> removes the card as a form of payment.
+├── config.js
+├── config_sample.js
+├── https
+│   ├── cert.pen
+│   ├── key.pen
+│   └── README.md
+├── index.js
+├── lib
+│   ├── data.js
+│   ├── handlers
+│   │   ├── api
+│   │   │   ├── checks.js
+│   │   │   ├── login.js
+│   │   │   ├── logout.js
+│   │   │   └── users.js
+│   │   ├── gui
+│   │   │   ├── account.js
+│   │   │   ├── checksGui.js
+│   │   │   └── session.js
+│   │   └── index.js
+│   ├── helpers.js
+│   ├── logs.js
+│   ├── middlewares
+│   │   ├── loadToken.js
+│   │   └── verifyToken.js
+│   ├── server.js
+│   └── workers.js
+├── LICENSE
+├── package.json
+├── public
+│   ├── css
+│   │   └── app.css
+│   ├── favicon.ico
+│   ├── images
+│   │   ├── logo.png
+│   │   └── rebellion to tyrants.jpeg
+│   └── js
+│       └── app.js
+├── README.md
+├── templates
+│   ├── _footer.html
+│   ├── _header.html
+│   └── index.html
+└── TODO
+```
 
-[GET] /cart -> user cart information.
-[POST] /cart -> adds an item to the user's cart.
-[PUT] /cart/:item_id -> updates the number of items for a given item
-[DELETE] /cart/:item_id -> removes an item from the cart.
 
-[GET] /menu -> all menu items or specifics through filters.
-[POST] /menu -> adds an item to the menu.
-[PUT] /menu/:item_id -> updates a specific item.
-[DELETE] /menu/:item_id -> removes an item from the menu.
+### Routes
+```
+All routes are accessible using GET method.
 
-[POST] /login -> authenticates a user and returns a token.
-[GET] /logout -> log off by deleting the previously created token.
+account/create -> create user
+account/edit -> edit user
+account/deleted -> after deleting user
 
-[GET] /user -> user information.
-[POST] /user -> adds an user.
-[PUT] /user -> updates user information.
-[DELETE] /user/:email -> removes the user.
+session/create ->  create session
+session/deleted -> after deleting session
+
+checks/all -> list of all checks
+checks/create -> create one more check
+checks/edit -> edit checks
+```
+
+### API Routes
+```
+[GET] api/users -> user information.
+[POST] api/users -> adds an user.
+[PUT] api/users -> updates user information.
+[DELETE] api/user/:phone -> removes the user.
+
+[POST] api/login -> authenticates an user and returns the token.
+[GET] api/logout -> log off by deleting the previously created token.
+
+[GET] api/checks -> retrieve all checks from user.
+[GET] api/checks/:check_id -> retrieve a specific check information.
+[POST] api/checks  -> adds a check for the user.
+[PUT] api/checks/:check_id -> updates the check.
+[DELETE] api/checks/:check_id  -> removes the check.
 ```
 All routes check the data sent and inform which fields should be sent when required.
 
-## Debug
+### Debug
 Several files have a debug option that can be actived starting the app with the enviroment var `NODE_DEBUG` and their respective values:
 ```sh
-data.js -> data
-errorHandler.js -> errors
-helpers.js -> helpers
-server.js -> server
-lib/handlers/card.js -> card
-lib/handlers/cart.js -> cart
+lib/data.js -> data
+lib/helpers.js -> helpers
+lib/server.js -> server
+lib/workers.js -> workers
+
 lib/handlers/index.js -> handlers
-lib/handlers/menu.js -> menu
-lib/handlers/order.js -> order
-lib/handlers/tokens.js -> tokens
-lib/handlers/users.js -> users
+
+lib/handlers/api/checks.js -> checks
+lib/handlers/api/login.js -> login
+lib/handlers/api/logout.js -> logout
+lib/handlers/api/users.js -> users
+
+lib/handlers/gui/account.js -> account
+lib/handlers/gui/checksGui.js -> checks-gui
+lib/handlers/gui/session.js -> session
 ```
