@@ -50,4 +50,4 @@ const currentEnvironment = typeof(process.env.NODE_ENV) == 'string' ? process.en
 // Check that the current environment is one of the environments above, if not, default to development
 const environmentToExport = typeof(environments[currentEnvironment]) == 'object' ? environments[currentEnvironment]: environments.development;
 
-module.exports = environmentToExport;
+export default environmentToExport;
