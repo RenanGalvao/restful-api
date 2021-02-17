@@ -19,7 +19,12 @@ environments.development = {
     baseURL: 'http://localhost:3000',
     companyName: 'Home Inc.',
     yearCreated: 2021,
-  }
+  },
+  token: {
+    tokenIdLength: 20,
+    accessTokenExpires: 15 * 60 * 1000,
+    refreshTokenExpires: 30 * 60 * 1000,
+  },
 };
 
 // Production
@@ -40,7 +45,12 @@ environments.production = {
     baseURL: 'http://localhost:3000',
     companyName: 'Home Inc.',
     yearCreated: 2021,
-  }
+  },
+  token: {
+    tokenIdLength: 20,
+    accessTokenExpires: 15 * 60 * 1000,
+    refreshTokenExpires: 30 * 60 * 1000,
+  },
 };
 
 
