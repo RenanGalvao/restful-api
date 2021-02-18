@@ -190,3 +190,21 @@ input {
   padding: 0 0 5px 0;
   color: #808080;
 }
+
+/*
+* Not found
+*/
+.notFound .content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.notFound .content h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+.notFound .content img {
+  display: block;
+  margin: 0 auto;
+}
