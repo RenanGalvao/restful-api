@@ -385,7 +385,7 @@ app.loadChecksListPage = async () => {
           td0.innerHTML = newResponse.method.toUpperCase();
           td1.innerHTML = newResponse.protocol+'://';
           td2.innerHTML = newResponse.url;
-          const state = typeof(newResponse.state) == 'string' ? responsePayload.state : 'unknown';
+          const state = typeof(newResponse.state) == 'string' ? newResponse.state : 'unknown';
           td3.innerHTML = state;
           td4.innerHTML = `<a href="/checks/edit/${newResponse.id}">View / Edit / Delete</a>`;
         }else {
