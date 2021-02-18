@@ -58,7 +58,7 @@ app.bindForms = function(){
       e.preventDefault();
       const formId = this.id;
       const path = this.action;
-      const method = this.getAttribute('method').toUpperCase();
+      let method = this.getAttribute('method').toUpperCase();
   
       // Hide the error message (if it's currently shown due to a previous error)
       document.querySelector(`#${formId} .formError`).style.display = 'hidden';
@@ -73,10 +73,33 @@ app.bindForms = function(){
       const elements = this.elements;
       for(let i = 0; i < elements.length; i++){
         if(elements[i].type !== 'submit'){
-          const valueOfElement = elements[i].type == 'checkbox' ? elements[i].checked : elements[i].value;
-          payload[elements[i].name] = valueOfElement;
+          // Determine class of element and set value accordingly
+          const classOfElement = typeof elements[i].classList.value == 'string' && elements[i].classList.value.length > 0 ? elements[i].classList.value : '';
+          const valueOfElement = elements[i].type == 'checkbox' && !classOfElement.includes('multiselect') ? elements[i].checked : !classOfElement.includes('intval') ? elements[i].value : parseInt(elements[i].value);
+          const elementIsChecked = elements[i].checked;
+          // Override the method of the form if the input's name is _method
+          let nameOfElement = elements[i].name;
+          if(nameOfElement == '_method'){
+            method = valueOfElement;
+          } else {
+            // Create an payload field named "method" if the elements name is actually httpmethod
+            if(nameOfElement == 'httpmethod'){
+              nameOfElement = 'method';
+            }
+            // If the element has the class "multiselect" add its value(s) as array elements
+            if(classOfElement.includes('multiselect')){
+              if(elementIsChecked){
+                payload[nameOfElement] = typeof payload[nameOfElement] == 'object' && payload[nameOfElement] instanceof Array ? payload[nameOfElement] : [];
+                payload[nameOfElement].push(valueOfElement);
+              }
+            } else {
+              payload[nameOfElement] = valueOfElement;
+            }
+          }
         }
       }
+      
+      console.log(payload)
 
       // If the method is DELETE, use the slug to pass the phone
       let slugs = [];
@@ -85,8 +108,6 @@ app.bindForms = function(){
           slugs.push(payload[key]);
         }
       }
-
-      console.log(slugs)
   
       // Call the API
       const options = {
@@ -186,6 +207,15 @@ app.formResponseProcessor = async function(formId, requestPayload, responsePaylo
   */
   if(formId == 'sessionCreate'){
     app.setSessionToken(responsePayload);
+    window.location = '/checks/all';
+  }
+
+
+  /*
+  * Checks 
+  * If the user just created a new check successfully, redirect back to the dashboard
+  */
+  if(formId == 'checksCreate'){
     window.location = '/checks/all';
   }
 };
