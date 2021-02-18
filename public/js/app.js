@@ -54,54 +54,63 @@ app.bindForms = function(){
     return;
   }
 
-  document.querySelector('form').addEventListener('submit', async function(e){
+  // Accept more than one form per page
+  const allForms = document.querySelectorAll('form');
+  allForms.forEach( form => {
+    form.addEventListener('submit', async function(e){
 
-    // Stop it from submitting
-    e.preventDefault();
-    const formId = this.id;
-    const path = this.action;
-    const method = this.method.toUpperCase();
+      // Stop it from submitting
+      e.preventDefault();
+      const formId = this.id;
+      const path = this.action;
+      const method = this.getAttribute('method').toUpperCase();
+  
+      // Hide the error message (if it's currently shown due to a previous error)
+      document.querySelector(`#${formId} .formError`).style.display = 'hidden';
 
-    // Hide the error message (if it's currently shown due to a previous error)
-    document.querySelector(`#${formId} .formError`).style.display = 'hidden';
-
-    // Turn the inputs into a payload
-    const payload = {};
-    const elements = this.elements;
-    for(let i = 0; i < elements.length; i++){
-      if(elements[i].type !== 'submit'){
-        const valueOfElement = elements[i].type == 'checkbox' ? elements[i].checked : elements[i].value;
-        payload[elements[i].name] = valueOfElement;
+      // Hide the success message (if it's currently shown due to a previous error)
+      if(document.querySelector(`#${formId} .formSuccess`)){
+        document.querySelector(`#${formId} .formSuccess`).style.display = 'none';
       }
-    }
-
-    // Call the API
-    const options = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      path,
-      method,
-    };
-    const [statusCode, response] = await app.client.request(options, payload); 
-    
-    // Display an error on the form if needed
-    if(statusCode !== 201 && statusCode !== 200){
-
-      // Try to get the error from the api, or set a default error message
-      const error = response.message || 'An error has occured, please try again';
-
-      // Set the formError field with the error text
-      document.querySelector(`#${formId} .formError`).innerHTML = error;
-
-      // Show (unhide) the form error field on the form
-      document.querySelector(`#${formId} .formError`).style.display = 'block';
-
-    } else {
-      // If successful, send to form response processor
-      app.formResponseProcessor(formId, payload, response);
-    }
-  });
+  
+      // Turn the inputs into a payload
+      const payload = {};
+      const elements = this.elements;
+      for(let i = 0; i < elements.length; i++){
+        if(elements[i].type !== 'submit'){
+          const valueOfElement = elements[i].type == 'checkbox' ? elements[i].checked : elements[i].value;
+          payload[elements[i].name] = valueOfElement;
+        }
+      }
+  
+      // Call the API
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        path,
+        method,
+      };
+      const [statusCode, response] = await app.client.request(options, payload); 
+      
+      // Display an error on the form if needed
+      if(statusCode !== 201 && statusCode !== 200){
+  
+        // Try to get the error from the api, or set a default error message
+        const error = response.message || 'An error has occured, please try again';
+  
+        // Set the formError field with the error text
+        document.querySelector(`#${formId} .formError`).innerHTML = error;
+  
+        // Show (unhide) the form error field on the form
+        document.querySelector(`#${formId} .formError`).style.display = 'block';
+  
+      } else {
+        // If successful, send to form response processor
+        app.formResponseProcessor(formId, payload, response);
+      }
+    });
+  }); 
 };
 
 // Form response processor
@@ -109,10 +118,9 @@ app.formResponseProcessor = async function(formId, requestPayload, responsePaylo
   let functionToCall = false;
 
   /*
-  * Account
+  * Account Create
+  * If account creation was successful, try to immediately log the user in
   */
-
-  // If account creation was successful, try to immediately log the user in
   if(formId == 'accountCreate'){
     // Take the phone and password, and use it to log the user in
     const newPayload = {
@@ -149,10 +157,18 @@ app.formResponseProcessor = async function(formId, requestPayload, responsePaylo
   }
 
   /*
-  * Session
+  * Account Edit
+  * If forms saved successfully and they have success messages, show them
   */
+  const formsWithSuccessMessages = ['accountEdit1', 'accountEdit2'];
+  if(formsWithSuccessMessages.includes(formId)){
+    document.querySelector(`#${formId} .formSuccess`).style.display = 'block';
+  }
 
-  // If login was successful, set the token in localstorage and redirect the user
+  /*
+  * Session
+  * If login was successful, set the token in localstorage and redirect the user
+  */
   if(formId == 'sessionCreate'){
     app.setSessionToken(responsePayload);
     window.location = '/checks/all';
@@ -231,6 +247,49 @@ app.bindLogoutButton = () => {
   });
 };
 
+// Load data on the page
+app.loadDataOnPage = () => {
+  // Get the current page from the body class
+  const bodyClasses = document.querySelector("body").classList;
+  const primaryClass = typeof bodyClasses[0]  == 'string' ? bodyClasses[0] : false;
+
+  // Logic for account settings page
+  if(primaryClass == 'accountEdit'){
+    app.loadAccountEditPage();
+  }
+};
+
+// Load the account edit page specifically
+app.loadAccountEditPage = async () => {
+  // Get the phone number from the GET /api/users, or log the user out if none is there
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    path: '/api/users',
+    method: 'GET',
+  };
+  const [statusCode, response] = await app.client.request(options, {});
+
+  if(statusCode == 200 && response.phone){
+    // Put the data into the forms as values where needed
+    document.querySelector("#accountEdit1 .firstNameInput").value = response.firstName;
+    document.querySelector("#accountEdit1 .lastNameInput").value = response.lastName;
+    document.querySelector("#accountEdit1 .displayPhoneInput").value = response.phone;
+
+    // Put the hidden phone field into both forms
+    const hiddenPhoneInputs = document.querySelectorAll("input.hiddenPhoneNumberInput");
+    hiddenPhoneInputs.forEach(input => {
+      input.value = response.phone;
+    });
+  } 
+
+  // Something went wrong
+  else {
+    app.logUserOut();
+  }
+};
+
 // Init (bootstrapping)
 app.init = function(){
 
@@ -243,6 +302,8 @@ app.init = function(){
   // Get the token from localstorage
   app.getSessionToken();
 
+  // Load data on page
+  app.loadDataOnPage();
 };
 
 // Call the init processes after the window loads
