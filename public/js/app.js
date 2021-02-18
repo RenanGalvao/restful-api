@@ -302,6 +302,11 @@ app.loadDataOnPage = () => {
   if(primaryClass == 'accountEdit'){
     app.loadAccountEditPage();
   }
+
+  // Logic for dashboard page
+  if(primaryClass == 'checksList'){
+    app.loadChecksListPage();
+  }
 };
 
 // Load the account edit page specifically
@@ -330,6 +335,80 @@ app.loadAccountEditPage = async () => {
   } 
 
   // Something went wrong
+  else {
+    app.logUserOut();
+  }
+};
+
+// Load the dashboard page specifically
+app.loadChecksListPage = async () => {
+  // Get the phone number from the GET /api/users, or log the user out if none is there
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    path: '/api/users',
+    method: 'GET',
+  };
+  const [statusCode, response] = await app.client.request(options, {});
+
+  if(statusCode == 200 && response.phone){
+    // Determine how many checks the user has
+    const allChecks = typeof response.checks == 'object' && response.checks instanceof Array && response.checks.length > 0 ? response.checks : [];
+    if(allChecks.length > 0){
+
+      // Show each created check as a new row in the table
+      allChecks.forEach( async checkId => {
+        // Get the data for the check
+        const newOptions = {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          path: '/api/checks',
+          method: 'GET',
+          slugs: [checkId],
+        };
+        const [newStatusCode, newResponse] = await app.client.request(newOptions, {});
+
+        if(newStatusCode == 200 ){
+          const checkData = newResponse;
+
+          // Make the check data into a table row
+          const table = document.getElementById("checksListTable");
+          const tr = table.insertRow(-1);
+          tr.classList.add('checkRow');
+          const td0 = tr.insertCell(0);
+          const td1 = tr.insertCell(1);
+          const td2 = tr.insertCell(2);
+          const td3 = tr.insertCell(3);
+          const td4 = tr.insertCell(4);
+          td0.innerHTML = newResponse.method.toUpperCase();
+          td1.innerHTML = newResponse.protocol+'://';
+          td2.innerHTML = newResponse.url;
+          const state = typeof(newResponse.state) == 'string' ? responsePayload.state : 'unknown';
+          td3.innerHTML = state;
+          td4.innerHTML = `<a href="/checks/edit/${newResponse.id}">View / Edit / Delete</a>`;
+        }else {
+          console.log(`Error trying to load check ID: ${checkId}`);
+        }
+      });
+
+      if(allChecks.length < 5){
+        // Show the createCheck CTA
+        document.getElementById("createCheckCTA").style.display = 'block';
+      }
+
+    } else {
+      // Show 'you have no checks' message
+      document.getElementById("noChecksMessage").style.display = 'table-row';
+
+      // Show the createCheck CTA
+      document.getElementById("createCheckCTA").style.display = 'block';
+
+    }
+  }
+
+  // If the request comes back as something other than 200, log the user our (on the assumption that the api is temporarily down or the users token is bad)
   else {
     app.logUserOut();
   }
