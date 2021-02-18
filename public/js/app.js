@@ -16,14 +16,9 @@ app.client = {};
 app.client.request = (options = app.client.request._optionsDefault, payload = {}) => {
 
   const xhr = new XMLHttpRequest();
-  xhr.open(options.method, `${options.path}${stringify(options.queryString)}`, true);
+  xhr.open(options.method, `${options.path}${typeof options.slugs != 'object' ? stringify(options.queryString) : `/${options.slugs.join('/')}`}`, true);
   for(const header in options.headers){
     xhr.setRequestHeader(header, options.headers[header]);
-  }
-
-  // If theres a current session token set, add that as a header
-  if(app.config.sessionToken){
-    xhr.setRequestHeader('Bearer', app.config.sessionToken.id);
   }
 
   // handle response
@@ -82,6 +77,16 @@ app.bindForms = function(){
           payload[elements[i].name] = valueOfElement;
         }
       }
+
+      // If the method is DELETE, use the slug to pass the phone
+      let slugs = [];
+      if(method == 'DELETE'){
+        for(const key in payload){
+          slugs.push(payload[key]);
+        }
+      }
+
+      console.log(slugs)
   
       // Call the API
       const options = {
@@ -90,11 +95,12 @@ app.bindForms = function(){
         },
         path,
         method,
+        slugs,
       };
       const [statusCode, response] = await app.client.request(options, payload); 
       
       // Display an error on the form if needed
-      if(statusCode !== 201 && statusCode !== 200){
+      if(![200, 201, 204].includes(statusCode)){
   
         // Try to get the error from the api, or set a default error message
         const error = response.message || 'An error has occured, please try again';
@@ -163,6 +169,15 @@ app.formResponseProcessor = async function(formId, requestPayload, responsePaylo
   const formsWithSuccessMessages = ['accountEdit1', 'accountEdit2'];
   if(formsWithSuccessMessages.includes(formId)){
     document.querySelector(`#${formId} .formSuccess`).style.display = 'block';
+  }
+
+  /*
+  * Account Deleted
+  * If the user just deleted their account, redirect them to the account-delete page
+  */
+  if(formId == 'accountEdit3'){
+    app.logUserOut(false);
+    window.location = '/account/deleted';
   }
 
   /*
@@ -318,6 +333,7 @@ app.client.request._optionsDefault = {
     'Content-Type': 'application/json',
   },
   queryString: '',
+  slugs: [],
   path: '/ping', 
   method: 'GET',
 };
