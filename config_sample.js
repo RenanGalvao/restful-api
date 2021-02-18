@@ -22,8 +22,8 @@ environments.development = {
   },
   token: {
     tokenIdLength: 20,
-    accessTokenExpires: 15 * 60 * 1000,
-    refreshTokenExpires: 30 * 60 * 1000,
+    accessTokenMaxAge: 15 * 60,
+    refreshTokenMaxAge: 30 * 60,
   },
 };
 
@@ -48,8 +48,8 @@ environments.production = {
   },
   token: {
     tokenIdLength: 20,
-    accessTokenExpires: 15 * 60 * 1000,
-    refreshTokenExpires: 30 * 60 * 1000,
+    accessTokenMaxAge: 15 * 60,
+    refreshTokenMaxAge: 30 * 60,
   },
 };
 
