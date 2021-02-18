@@ -37,7 +37,7 @@ app.client.request = (options = app.client.request._optionsDefault, payload = {}
           resolve([status, JSON.parse(res)]);
         }catch(err){
           console.log(err);
-          reject([status, {err: 'Internal', message: 'We\'re working on it :)'}]);
+          resolve([status, {err: 'Internal', message: 'We\'re working on it :)'}]);
         }
       }
     };
@@ -200,11 +200,45 @@ app.setLoggedInClass = function(add){
   }
 };
 
+app.logUserOut = async () => {
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    path: '/api/logout',
+    method: 'GET',
+  };
+  const [statusCode, response] = await app.client.request(options, {});
+  console.log(statusCode)
+  if(statusCode == 204){
+     // Set the app.config token as false
+     app.setSessionToken(false);
+
+     // Send the user to the logged out page
+     window.location = '/session/deleted';
+  }
+};
+
+app.bindLogoutButton = () => {
+  document.getElementById("logoutButton").addEventListener("click", function(e){
+
+    // Stop it from redirecting anywhere
+    e.preventDefault();
+
+    // Log the user out
+    app.logUserOut();
+
+  });
+};
+
 // Init (bootstrapping)
 app.init = function(){
 
   // Bind all form submissions
   app.bindForms();
+
+  // Logout
+  app.bindLogoutButton();
 
   // Get the token from localstorage
   app.getSessionToken();
