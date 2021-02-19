@@ -1,5 +1,9 @@
-# RESTful API using vanilla NodeJS
+# Uptime Monitoring
 A complete HTTP/S webserver made with vanilla Node.js. 
+
+![Home Page](https://github.com/RenanGalvao/restful-api/blob/master/screenshots/home.png?raw=true)
+![Dashboard](https://github.com/RenanGalvao/restful-api/blob/master/screenshots/dashboard.png?raw=true)
+
 
 ## How to Install
 1. Using your terminal: 
