@@ -16,7 +16,7 @@ openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pen -out c
 3. Rename the `config_sample.js` file to `config.js` and modify the necessary fields.
 
 ## Basic Use
-Start the app: `node index.js`.
+Start the app: `node index.js` and access the app in `http://localhost:3000`.
 
 
 ### Actual Folder Structure
