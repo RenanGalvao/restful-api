@@ -98,14 +98,18 @@ app.bindForms = function(){
           }
         }
       }
-      
-      console.log(payload)
 
-      // If the method is DELETE, use the slug to pass the phone
+      // If the method is DELETE or PUT, use the slug to pass the phone
       let slugs = [];
       if(method == 'DELETE'){
         for(const key in payload){
           slugs.push(payload[key]);
+        }
+      }else if(method == 'PUT'){
+        for(const key in payload){
+          if(key == 'uid'){
+            slugs.push(payload[key]);
+          }
         }
       }
   
@@ -187,7 +191,7 @@ app.formResponseProcessor = async function(formId, requestPayload, responsePaylo
   * Account Edit
   * If forms saved successfully and they have success messages, show them
   */
-  const formsWithSuccessMessages = ['accountEdit1', 'accountEdit2'];
+  const formsWithSuccessMessages = ['accountEdit1', 'accountEdit2', 'checksEdit1'];
   if(formsWithSuccessMessages.includes(formId)){
     document.querySelector(`#${formId} .formSuccess`).style.display = 'block';
   }
@@ -216,6 +220,11 @@ app.formResponseProcessor = async function(formId, requestPayload, responsePaylo
   * If the user just created a new check successfully, redirect back to the dashboard
   */
   if(formId == 'checksCreate'){
+    window.location = '/checks/all';
+  }
+
+  // If the user just deleted a check, redirect them to the dashboard
+  if(formId == 'checksEdit2'){
     window.location = '/checks/all';
   }
 };
@@ -306,6 +315,11 @@ app.loadDataOnPage = () => {
   // Logic for dashboard page
   if(primaryClass == 'checksList'){
     app.loadChecksListPage();
+  }
+
+  // Logic for check details page
+  if(primaryClass == 'checksEdit'){
+    app.loadChecksEditPage();
   }
 };
 
@@ -411,6 +425,55 @@ app.loadChecksListPage = async () => {
   // If the request comes back as something other than 200, log the user our (on the assumption that the api is temporarily down or the users token is bad)
   else {
     app.logUserOut();
+  }
+};
+
+// Load the checks edit page specifically
+app.loadChecksEditPage = async () => {
+
+  // Get the check id from the href, if none is found then redirect back to dashboard
+  // eg.: http://domain.com/checks/edit/:id
+  const lastSlashIndex = window.location.href.lastIndexOf('/');
+  const tmpId = window.location.href.substring(lastSlashIndex + 1);
+  const id = typeof tmpId == 'string' && tmpId.length > 0 ? tmpId : false;
+  
+  if(!id){
+    window.location = '/checks/all';
+  }
+    
+  // Fetch the check data
+  const options = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    path: `/api/checks/${id}`,
+    method: 'GET',
+  };
+  const [statusCode, response] = await app.client.request(options, {});
+
+  if(statusCode == 200){
+    // Put the hidden id field into both forms
+    const hiddenIdInputs = document.querySelectorAll("input.hiddenIdInput");
+    for(let i = 0; i < hiddenIdInputs.length; i++){
+      hiddenIdInputs[i].value = response.id;
+    }
+
+    // Put the data into the top form as values where needed
+    document.querySelector("#checksEdit1 .displayIdInput").value = response.id;
+    document.querySelector("#checksEdit1 .displayStateInput").value = response.state;
+    document.querySelector("#checksEdit1 .protocolInput").value = response.protocol;
+    document.querySelector("#checksEdit1 .urlInput").value = response.url;
+    document.querySelector("#checksEdit1 .methodInput").value = response.method;
+    document.querySelector("#checksEdit1 .timeoutInput").value = response.timeoutSeconds;
+    const successCodeCheckboxes = document.querySelectorAll("#checksEdit1 input.successCodesInput");
+    for(let i = 0; i < successCodeCheckboxes.length; i++){
+      if(response.successCodes.includes(parseInt(successCodeCheckboxes[i].value))){
+        successCodeCheckboxes[i].checked = true;
+      }
+    }
+  }else{
+    // If the request comes back as something other than 200, redirect back to dashboard
+    window.location = '/checks/all';
   }
 };
 
